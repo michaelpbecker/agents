@@ -13,29 +13,25 @@ Features:
 import os
 import sys
 import json
-import logging
+from pathlib import Path
 from typing import Dict, Any, Optional
 from datetime import datetime
 
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from slack_sdk.errors import SlackApiError
-from dotenv import load_dotenv
 
-from mode_client import ModeClient
+# Add parent directory to path to import shared modules
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from shared.mode_client import ModeClient
+from shared.config import load_env_file, setup_logging, validate_required_env_vars
 
 # Load environment variables
-load_dotenv()
+load_env_file()
 
 # Setup logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('bot.log'),
-        logging.StreamHandler(sys.stdout)
-    ]
-)
+setup_logging(log_file='bot.log', log_level='INFO')
 
 logger = logging.getLogger(__name__)
 
@@ -478,9 +474,8 @@ def main():
         'MODE_REPORT_ID'
     ]
 
-    missing_vars = [var for var in required_vars if not os.getenv(var)]
+    missing_vars = validate_required_env_vars(required_vars)
     if missing_vars:
-        logger.error(f"Missing required environment variables: {', '.join(missing_vars)}")
         sys.exit(1)
 
     # Start the bot using Socket Mode

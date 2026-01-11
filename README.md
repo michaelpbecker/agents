@@ -41,11 +41,23 @@ agents/
 ├── requirements.txt                   # Shared Python dependencies
 ├── .env.example                       # Environment variables template
 ├── .gitignore                        # Git ignore rules
-└── performance-slack-agent/
+│
+├── shared/                           # Shared libraries for all agents
+│   ├── __init__.py                   # Package init
+│   ├── mode_client.py                # Mode Analytics API client
+│   ├── slack_utils.py                # Slack utilities and helpers
+│   └── config.py                     # Configuration management
+│
+├── agent-template/                   # Template for creating new agents
+│   ├── README.md                     # Template documentation
+│   ├── agent.py                      # Template agent code
+│   └── .env.example                  # Template environment variables
+│
+└── performance-slack-agent/          # Performance celebration bot
     ├── README.md                      # Agent documentation
     ├── slack_bot.py                   # Main Slack bot (Socket Mode)
-    ├── mode_client.py                 # Mode Analytics API client
-    ├── slack_client.py                # Slack API helpers (legacy)
+    ├── mode_client.py                 # Mode client (legacy, use shared/)
+    ├── slack_client.py                # Slack helpers (legacy, use shared/)
     ├── agent.py                       # CLI agent (legacy)
     ├── config.yaml                    # Configuration
     └── gif_selector.py                # GIF selection (legacy)
@@ -87,29 +99,64 @@ Follow the specific README in each agent's directory for detailed setup and usag
 
 ### Adding a New Agent
 
-1. Create a new directory under `agents/`:
+Creating a new agent is easy using the provided template:
+
+1. **Copy the agent template**:
    ```bash
-   mkdir agents/my-new-agent
+   cp -r agent-template your-new-agent-name
+   cd your-new-agent-name
    ```
 
-2. Add your agent code and README:
-   ```bash
-   touch agents/my-new-agent/README.md
-   touch agents/my-new-agent/agent.py
+2. **Customize the agent**:
+   - Edit `agent.py` with your logic
+   - Update `README.md` with documentation
+   - Add environment variables to root `.env`
+
+3. **Use shared libraries** instead of duplicating code:
+   ```python
+   from shared.mode_client import ModeClient
+   from shared.slack_utils import get_slack_client, post_message
+   from shared.config import load_env_file, setup_logging
    ```
 
-3. Update dependencies in `requirements.txt` if needed
+4. **Update main README** (this file) with your agent description
 
-4. Update this README with your agent description
+5. **Test thoroughly** before committing
+
+📚 **New to creating agents?** See [ADDING_AGENTS.md](ADDING_AGENTS.md) for a complete step-by-step tutorial with examples.
+
+See [agent-template/README.md](agent-template/README.md) for detailed template documentation.
+
+### Shared Libraries
+
+All agents can use these shared modules (in `shared/`):
+
+**`shared.mode_client`**
+- `ModeClient` - Mode Analytics API integration
+- Methods for fetching reports and performance data
+
+**`shared.slack_utils`**
+- `get_slack_client()` - Get configured Slack client
+- `post_message()`, `post_ephemeral()` - Send messages
+- Block helpers: `create_section_block()`, `create_button()`, etc.
+- Formatting: `format_user_mention()`, `format_link()`, etc.
+
+**`shared.config`**
+- `load_env_file()` - Load environment variables
+- `setup_logging()` - Configure logging
+- `validate_required_env_vars()` - Validate configuration
+- `Config` class for YAML + env configuration
 
 ### Best Practices
 
-- Keep agents modular and single-purpose
-- Document all environment variables in `.env.example`
-- Include comprehensive README with setup instructions
-- Add error handling and logging
-- Use type hints for better code clarity
-- Follow Python PEP 8 style guidelines
+- **Reuse shared libraries** - Don't duplicate Mode, Slack, or config code
+- **Keep agents modular** - One agent, one purpose
+- **Document everything** - Update README with setup instructions
+- **Use environment variables** - Never hardcode secrets
+- **Add logging** - Use `shared.config.setup_logging()`
+- **Handle errors** - Catch and log exceptions appropriately
+- **Type hints** - Makes code more maintainable
+- **Follow PEP 8** - Consistent Python style
 
 ## Common Dependencies
 
