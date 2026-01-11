@@ -1,0 +1,16 @@
+# Core dependencies
+requests>=2.31.0
+python-dotenv>=1.0.0
+pyyaml>=6.0.1
+
+# Slack integration
+slack-sdk>=3.26.0
+
+# Date/time handling
+python-dateutil>=2.8.2
+
+# Rich terminal output
+rich>=13.7.0
+
+# HTTP client
+httpx>=0.26.0

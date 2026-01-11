@@ -1,0 +1,33 @@
+# Performance Slack Agent Configuration
+
+# Mode Analytics settings
+mode:
+  # Your Mode report ID (also can be set via MODE_REPORT_ID env var)
+  report_id: "your_report_id_here"
+
+  # Field names in your Mode report
+  performance_field: "actual"  # Column name containing actual performance
+  forecast_field: "forecast"   # Column name containing forecast
+
+# Performance threshold (percentage)
+# Only celebrate if we beat forecast by at least this much
+# 0.0 = celebrate any beat, 5.0 = only celebrate if beat by 5% or more
+threshold: 0.0
+
+# GIF selection settings
+gif:
+  # Search query for finding celebration GIFs
+  search_query: "celebration success winner"
+
+# Slack message customization (optional)
+message:
+  # Custom message template (uses default if not provided)
+  # Available placeholders: {actual}, {forecast}, {beat_percentage}
+  template: null
+  # Example custom template:
+  # template: |
+  #   🎉 AMAZING! We crushed it! 🎉
+  #
+  #   Actual: {actual:,.2f}
+  #   Forecast: {forecast:,.2f}
+  #   Beat by: {beat_percentage:.1f}%
